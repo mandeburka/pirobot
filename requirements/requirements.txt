@@ -1,0 +1,5 @@
+blessed==1.9.5
+ipdb==0.8
+ipython==2.4.1
+pyzmq==14.5.0
+wcwidth==0.1.4
