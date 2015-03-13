@@ -1,7 +1,8 @@
 # coding: utf-8
+from Queue import Empty
 from multiprocessing import Process, Queue
 import zmq
-from pirobot import REQUEST_TIMEOUT, PORT
+from pirobot import REQUEST_TIMEOUT, PORT, HEARTBEAT_INTERVAL, NOOP
 
 
 class Talks(Process):
@@ -18,9 +19,11 @@ class Talks(Process):
         self.context = zmq.Context()
         self.poll = zmq.Poller()
         self.connect()
-
         while True:
-            request = self.queue.get()
+            try:
+                request = self.queue.get(timeout=HEARTBEAT_INTERVAL)
+            except Empty:
+                request = {NOOP}
             self.client.send_pyobj(request)
 
             socks = dict(self.poll.poll(REQUEST_TIMEOUT))
@@ -28,6 +31,7 @@ class Talks(Process):
             if socks.get(self.client) == zmq.POLLIN:
                 reply = self.client.recv()
             else:
+                print 'reconnect'
                 # clear queue
                 while not self.queue.empty():
                     self.queue.get()

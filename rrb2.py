@@ -1,6 +1,11 @@
 #rrb2.py Library
+from mock import Mock
 
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    GPIO = Mock()
+
 import time
 
 class RRB2:
