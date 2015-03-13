@@ -1,17 +1,20 @@
 # coding: utf-8
 from Queue import Empty
 from multiprocessing import Process, Queue
+
 import zmq
-from pirobot import REQUEST_TIMEOUT, PORT, HEARTBEAT_INTERVAL, NOOP
+
+from pirobot.config import HOST, REQUEST_TIMEOUT, PORT, HEARTBEAT_INTERVAL
+from pirobot import NOOP
 
 
-class Talks(Process):
+class Talk(Process):
     client = None
     context = None
     poll = None
 
     def __init__(self):
-        super(Talks, self).__init__()
+        super(Talk, self).__init__()
         self.queue = Queue()
         self.daemon = True
 
@@ -43,7 +46,10 @@ class Talks(Process):
 
     def connect(self):
         self.client = self.context.socket(zmq.PAIR)
-        self.client.connect("tcp://localhost:%s" % PORT)
+        self.client.connect("tcp://{host}:{port}".format(
+            host=HOST,
+            port=PORT
+        ))
         self.poll.register(self.client, zmq.POLLIN)
 
     def close_connection(self):

@@ -1,8 +1,10 @@
 # coding: utf-8
 import Tkinter as tk
 from threading import Timer
+
 from pirobot import MOVEMENTS, STOP
-from pirobot.talks import Talks
+from pirobot.communication.talk import Talk
+
 
 KEY_UP = 'Up'
 KEY_DOWN = 'Down'
@@ -36,7 +38,7 @@ class Application(tk.Frame):
         self.pack()
         self.createWidgets()
 
-        self.talks = Talks()
+        self.talks = Talk()
         self.talks.start()
         self.movements_queue = self.talks.queue
 
